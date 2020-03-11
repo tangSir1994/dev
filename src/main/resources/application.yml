@@ -1,0 +1,108 @@
+#docker
+server:
+  # 端口号
+  port: 8080
+spring:
+  # 配置thymeleaf模板
+  thymeleaf:
+    cache: false
+  # 配置数据源
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:3306/demo
+    url: jdbc:mysql://docker_mysql/test
+    username: root
+    password: 1234
+    # 将springboot 默认的连接池改成德鲁伊连接池
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    #   配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: [stat,wall,log4j]
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+# 日志
+logging:
+  level:
+    com:
+      dk: debug
+  # 打印日志存放的位置
+  path: E:/logs/
+mybatis:
+  # 生成mapper.xml文件所在的位置
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  # 生成实体类所在的位置
+  type-aliases-package: com.dk.pojo
+  # 指定全局配置文件的位置
+  config-location: classpath:mybatis/config/sqlMapConfig.xml
+
+
+#server:
+#  # 端口号
+#  port: 8080
+#spring:
+#  # 配置thymeleaf模板
+#  thymeleaf:
+#    cache: false
+#  # 配置数据源
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:3306/demo   url: jdbc:mysql://docker_mysql/test
+#    username: root
+#    password: 1234
+#    # 将springboot 默认的连接池改成德鲁伊连接池
+#    type: com.alibaba.druid.pool.DruidDataSource
+#    initialSize: 5
+#    minIdle: 5
+#    maxActive: 20
+#    maxWait: 60000
+#    timeBetweenEvictionRunsMillis: 60000
+#    minEvictableIdleTimeMillis: 300000
+#    validationQuery: SELECT 1 FROM DUAL
+#    testWhileIdle: true
+#    testOnBorrow: false
+#    testOnReturn: false
+#    poolPreparedStatements: true
+#    #   配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+#    filters: [stat,wall,log4j]
+#    maxPoolPreparedStatementPerConnectionSize: 20
+#    useGlobalDataSourceStat: true
+#    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+#  # 配置 reids
+#  redis:
+#    # 本地地址
+#    host: 127.0.0.1
+#      # redis端口号
+#    port: 6379
+## 日志
+#logging:
+#  level:
+#    com:
+#      dk: debug
+#  # 打印日志存放的位置
+#  path: E:/logs/
+#mybatis:
+#  # 生成mapper.xml文件所在的位置
+#  mapper-locations: classpath:mybatis/mapper/*.xml
+#  # 生成实体类所在的位置
+#  type-aliases-package: com.dk.pojo
+#  # 指定全局配置文件的位置
+#  config-location: classpath:mybatis/config/sqlMapConfig.xml
+## 配置 rocketMq
+#rocketmq:
+#  # linux 地址 + mq 端口号
+#  name-server: 192.168.124.123:9876
+#  producer:
+#    # 组名
+#    group: my-group
+

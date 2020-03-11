@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form id="addInfo">
+        汽车名称:<input name="carName" id="carName"><br/>
+        汽车价格:<input name="carPrice" id="carPrice" ><br/>
+        汽车分类:
+        <select id="carType" name="carType">
+            <option>-- 请选择 --</option>
+            <option th:each="carType : ${list}" th:value="${carType.tid}">[[${carType.tname}]]</option>
+        </select><br/>
+        生产日期:<input type="date" id="manuTime" name="manuTime"><br/>
+        过期时间:<input type="date" id="expireTime" name="expireTime"><br/>
+        上下架：
+            <input type="radio" name="isLower" value="0" id="isLower1">下架
+            <input type="radio" name="isLower" value="1" id="isLower2">上架
+    </form>
+</body>
+</html>

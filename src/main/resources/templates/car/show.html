@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div th:insert="/common/common.html"></div>
+    <div id="toolbar">
+        汽车模糊查询:<input type="text" id="carName" name="carName">
+        分类查询:
+            <select name="carType">
+                <option value="-1">-- 请选择 --</option>
+                <option th:each="carType : ${list}" th:value="${carType.tid}">[[${carType.tname}]]</option>
+            </select>
+        <input type="button" onclick="getData()" value="查询" class="btn btn-primary">
+        <input type="button" value="添加" onclick="toAdd()" class="btn btn-success">
+        <input type="button" value="批量删除" onclick="deleteAll()" class="btn btn-danger">
+    </div>
+    <table id="table"></table>
+    <script type="text/javascript">
+        $('#table').bootstrapTable({
+            url: '/carController/getCar',//访问后台获取数据的url
+            toolbar: '#toolbar',//工具按钮用哪个容器
+            method: 'post',
+            contentType : "application/x-www-form-urlencoded",//请求参数方式
+            striped: true,//是否显示行间隔色
+            cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            sortable: true, //是否启用排序
+            sortOrder: "asc", //排序方式
+            pagination: true,//是否显示分页（*）
+            sidePagination: "server",//分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1, //初始化加载第一页，默认第一页,并记录
+            pageSize: 3,  //每页的记录行数（*）
+            pageList: [3, 5, 7, 10], //可供选择的每页的行数（*）
+            search: true,//是否显示表格搜索,默认false
+            cardView: false,//是否显示详细视图
+            detailView: false,//是否显示父子表
+            showToggle: true,//是否显示详细视图和列表视图的切换按钮
+            clickToSelect: true,//是否启用点击选中行
+            showRefresh: true,//是否显示刷新按钮
+            strictSearch: true,
+            showColumns: true,//是否显示所有的列（选择显示的列）
+            //得到查询的参数
+            queryParams : function (params) {
+                //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+                var temp = {
+                    pageSize: params.limit,                         //页面大小
+                    pageNum: (params.offset / params.limit) + 1,   //页码
+                    carName:$("#carName").val(),
+                    carType:$("[name=carType]").val()
+                };
+                return temp;
+            },
+            columns: [{
+                checkbox: true,
+                visible: true //是否显示复选框
+            },{
+                field: 'carId', //field对应的实体类的属性名
+                title: 'id',// title 对应的是表头
+                sortable: true
+            }, {
+                field: 'carName',
+                title: '汽车名称',
+                sortable: true
+            }, {
+                field: 'carPrice',
+                title: '汽车价格',
+                sortable: true
+            }, {
+                field: 'tname',
+                title: '汽车类型',
+                sortable: true
+            }, {
+                field: 'manuTime',
+                title: '生产日期',
+                sortable: true
+            }, {
+                field: 'expireTime',
+                title: '过期日期',
+                sortable: true
+            }, {
+                field: 'isLower',
+                title: '状态',
+                sortable: true,
+                formatter:function(value,row,index){
+                    if(row.isLower==0){
+                        return "下架";
+                    }
+                    if(row.isLower==1){
+                        return "上架";
+                    }
+                }
+            },{
+                title : '是否上下架',
+                formatter:function(value,row,index){
+                    var id = row.carId;
+                    var isLower = row.isLower;
+                    var result = "";
+                    if (isLower == 0) {
+                        result += "<a href='javascript:updateFrames("+id+",1)'>上架</span></a>";
+                    }
+                    if (isLower == 1) {
+                        result += "<a href='javascript:updateFrames("+id+",0)'>下架</a>";
+                    }
+
+                    return result;
+                }
+            },{
+                title: '操作',
+                width: 120,
+                align: 'center',
+                valign: 'middle',
+                formatter:function(value,row,index){
+                    var id = row.carId;// js 数组的方法，将数组里面的值根据join('abc') abc进行拼接
+                    return [
+                        '<a class="btn btn-xs blue" title="修改" href="javascript:toUpdate('+id+')" ><span class="glyphicon glyphicon-pencil"></span></a>',
+                        '<a class="btn btn-xs red" title="删除" href="javascript:deleteRole('+id+')"><span class="glyphicon glyphicon-remove"></a>'].join('');
+                }
+            },]
+        });
+
+        //刷新表格
+        function getData(){
+            $('#table').bootstrapTable("refresh")//refresh 刷新
+        }
+        //上下架
+        function updateFrames(carId,isLower){
+            //执行修改操作
+            $.ajax({
+                url:"/carController/getFrames",
+                type:"post",
+                dataType:"json",
+                data:{carId:carId,isLower:isLower},
+                success:function(result){
+                    if(result){
+                        var myDialog = dialog({
+                            content : "操作成功"
+                        })
+                        myDialog.showModal();
+                        setTimeout(function(){
+                            myDialog.close();
+                        },2000);
+                        getData();
+                    }else{
+                        var myDialog = dialog({
+                            content : "操作失败"
+                        })
+                        myDialog.showModal();
+                        setTimeout(function(){
+                            myDialog.close();
+                        },2000);
+                    }
+                },
+                error:function(data){
+                    alert("系统错误，请稍后再试");
+                }
+            })
+        }
+        //增加
+        function toAdd(){
+            BootstrapDialog.show({
+                type : BootstrapDialog.TYPE_SUCCESS,//弹出框类型 颜色
+                title : '添加 ',//load jquery的方法
+                message : $('<div></div>').load("/carController/toAdd"),
+                // size : BootstrapDialog.SIZE_SMALL,//size为小，默认的对话框比较宽
+                buttons : [ {// 设置关闭按钮
+                    label : '关闭',
+                    action : function(dialog) {//点击按钮方法
+                        dialog.close();
+                    }
+                },{
+                    label : '确定',
+                    cssClass:'btn-success',
+                    action : function(dialog) {
+                        //增加
+                        $.ajax({
+                            url:"/carController/addInfo",
+                            type:"post",
+                            data:$("#addInfo").serialize(),
+                            async:false,
+                            dataType:"text",
+                            success:function(result){
+                                if(result=='true'){
+                                    toastr.success('增加成功');
+                                    dialog.close();
+                                    getData();
+                                }else{
+                                    msg("增加失败",2000);
+                                }
+                            },
+                            error:function(){
+                                msg("系统错误，请联系管理员",2000);
+                            }
+                        })
+                    }
+                } ],
+            });
+        }
+        //修改
+        function toUpdate(id){
+            BootstrapDialog.show({
+                type : BootstrapDialog.TYPE_SUCCESS,//弹出框类型 颜色
+                title : '修改 ',//load jquery的方法
+                message : $('<div></div>').load("/carController/toUpdate/" + id ),
+                // size : BootstrapDialog.SIZE_SMALL,//size为小，默认的对话框比较宽
+                buttons : [ {// 设置关闭按钮
+                    label : '关闭',
+                    action : function(dialog) {//点击按钮方法
+                        dialog.close();
+                    }
+                },{
+                    label : '确定',
+                    cssClass:'btn-success',
+                    action : function(dialog) {
+                        $.ajax({
+                            url:"/carController/updateInfo",
+                            type:"post",
+                            data:$("#updateInfo").serialize(),
+                            async:false,
+                            dataType:"text",
+                            success:function(result){
+                                if(result=='true'){
+                                    toastr.success('修改成功');
+                                    dialog.close();
+                                    getData();
+                                }else{
+                                    msg("修改失败",2000);
+                                }
+                            },
+                            error:function(){
+                                msg("系统错误，请联系管理员",2000);
+                            }
+                        })
+                    }
+                } ],
+            });
+        }
+        //批量删除
+        function deleteAll() {
+
+            if (confirm("是否确认删除")) {
+                var ids = [];
+                var rows = $("#table").bootstrapTable("getSelections");
+                $(rows).each(function(i,e){
+                    ids.push(e.carId);
+                })
+                if (ids.length<=0){
+                    toastr.success('请选择要删除的行');
+                    return;
+                }
+                $.ajax({
+                    url:"/carController/getDeleteAll?ids=" + ids,
+                    type:"post",
+                    async:false,//同步
+                    dataType:"json",
+                    success:function(result){
+                        getData();
+                    },
+                    error:function(){
+                        msg("系统错误，请联系管理员",3000);
+                    }
+                })
+            }
+        }
+    </script>
+</body>
+</html>

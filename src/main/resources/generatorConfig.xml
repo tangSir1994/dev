@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <!-- 使用逆向工程插件需要添加数据库的jar包的位置 -->
+    <classPathEntry location="D:\AnZhuangRuanJian\MavenRepo\repository\mysql\mysql-connector-java\5.0.5\mysql-connector-java-5.0.5.jar"></classPathEntry>
+
+   <context id="DB2Tables" targetRuntime="MyBatis3">
+   
+   <commentGenerator>
+     <property name="suppressAllComments" value="true"></property>   
+   </commentGenerator>
+  
+  
+    <!-- 设定数据库连接 -->
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+        connectionURL="jdbc:mysql://localhost:3306/test"
+        userId="root"
+        password="1234">
+    </jdbcConnection>
+    
+    
+
+    <javaTypeResolver >
+      <property name="forceBigDecimals" value="false" />
+    </javaTypeResolver>
+
+
+    <!--  生成 bean 存放的位置 model  -->
+    <javaModelGenerator targetPackage="com.dk.pojo" targetProject=".\src\main\java"><!--此路径每次新建项目都要改-->
+      <property name="enableSubPackages" value="true" />
+      <property name="trimStrings" value="true" />
+    </javaModelGenerator>
+
+       <!-- 加载mybatis的映射配置文件
+		 	配置mapper类自动生成的xml文件和java文件分离的路径
+		 -->
+    <sqlMapGenerator targetPackage="mapper"  targetProject=".\src\main\resources\mybatis"><!--此路径每次新建项目都要改-->
+      <property name="enableSubPackages" value="true" />
+    </sqlMapGenerator>
+
+    <!-- 生成的mapper.xml 对应的那个mapper接口的存放位置  -->
+    <javaClientGenerator type="XMLMAPPER" targetPackage="com.dk.mapper"  targetProject=".\src\main\java"><!--此路径每次新建项目都要改-->
+      <property name="enableSubPackages" value="true" />
+    </javaClientGenerator>
+
+
+    <!--  设定反向生成的表 -->
+	 <table tableName="car"></table>
+	 <table tableName="car_type"></table>
+
+
+  </context>
+</generatorConfiguration>
