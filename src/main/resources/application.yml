@@ -1,7 +1,7 @@
 #docker
 server:
   # 端口号
-  port: 8080
+  port: 8086
 spring:
   # 配置thymeleaf模板
   thymeleaf:
