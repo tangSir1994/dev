@@ -12,7 +12,7 @@ spring:
     url: jdbc:mysql://123.57.90.11:3306/dev
 #    url: jdbc:mysql://docker_mysql/test
     username: root
-    password: 1234
+    password: root
     # 将springboot 默认的连接池改成德鲁伊连接池
     type: com.alibaba.druid.pool.DruidDataSource
     initialSize: 5
